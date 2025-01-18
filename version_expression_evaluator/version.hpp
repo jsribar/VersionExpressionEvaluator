@@ -15,6 +15,8 @@ public:
         return digits_m;
     }
 
+    auto operator<=>(const version_t& other) const = default;
+
 private:
     std::vector<int> digits_m;
 

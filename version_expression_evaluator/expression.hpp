@@ -1,50 +1,38 @@
 #pragma once
 
+#include "context.hpp"
+#include "operators.hpp"
 #include "version.hpp"
 
 namespace jsribar::version_expression {
 
-class context_t;
-
-class boolean_expression
+class boolean_expression_t
 {
-protected:
-    boolean_expression() = default;
-
 public:
-    explicit boolean_expression(bool value)
-        : value_m(value)
-    {
-    }
-    virtual ~boolean_expression() = default;
+    virtual ~boolean_expression_t() = default;
 
-    virtual bool evaluate(const context_t&) const
-    {
-        return value_m;
-    }
+    virtual bool evaluate(const context_t&) const = 0;
 
-private:
-    bool value_m{ false };
 };
 
-class not_expression : public boolean_expression
+class not_expression_t : public boolean_expression_t
 {
 public:
-    explicit not_expression(const boolean_expression& boolean_expression)
-        : expression_m(boolean_expression)
+    explicit not_expression_t(const boolean_expression_t& boolean_expression_t)
+        : expression_m(boolean_expression_t)
     {
     }
 
     bool evaluate(const context_t&) const override;
 
 private:
-    const boolean_expression& expression_m;
+    const boolean_expression_t& expression_m;
 };
 
-class and_expression : public boolean_expression
+class and_expression_t : public boolean_expression_t
 {
 public:
-    and_expression(const boolean_expression& lhs, const boolean_expression& rhs)
+    and_expression_t(const boolean_expression_t& lhs, const boolean_expression_t& rhs)
         : lhs_m(lhs)
         , rhs_m(rhs)
     {
@@ -53,14 +41,14 @@ public:
     bool evaluate(const context_t&) const override;
 
 private:
-    const boolean_expression& lhs_m;
-    const boolean_expression& rhs_m;
+    const boolean_expression_t& lhs_m;
+    const boolean_expression_t& rhs_m;
 };
 
-class or_expression : public boolean_expression
+class or_expression_t : public boolean_expression_t
 {
 public:
-    or_expression(const boolean_expression& lhs, const boolean_expression& rhs)
+    or_expression_t(const boolean_expression_t& lhs, const boolean_expression_t& rhs)
         : lhs_m(lhs)
         , rhs_m(rhs)
     {
@@ -69,133 +57,24 @@ public:
     bool evaluate(const context_t&) const override;
 
 private:
-    const boolean_expression& lhs_m;
-    const boolean_expression& rhs_m;
+    const boolean_expression_t& lhs_m;
+    const boolean_expression_t& rhs_m;
 };
 
-class value_expression
+class comparison_expression_t : public boolean_expression_t
 {
 public:
-    virtual ~value_expression() = default;
+    comparison_expression_t(operator_t comparison_operator, const version_t& version)
+        : operator_m(comparison_operator)
+        , version_m(version)
+    {
+    }
 
-    virtual version_t evaluate(const context_t&) const = 0;
-};
-
-class version_constant_expression : public value_expression
-{
-public:
-    explicit version_constant_expression(const version_t& version)
-        : version_m(version)
-    { }
-
-    version_t evaluate(const context_t&) const override;
+    bool evaluate(const context_t&) const override;
 
 private:
-
+    operator_t operator_m;
     version_t version_m;
-};
-
-class version_variable_expression : public value_expression
-{
-public:
-    version_t evaluate(const context_t&) const override;
-};
-
-
-class equal_expression : public boolean_expression
-{
-public:
-    equal_expression(const value_expression& lhs, const value_expression& rhs)
-        : lhs_m(lhs)
-        , rhs_m(rhs)
-    {
-    }
-
-    bool evaluate(const context_t&) const override;
-
-private:
-    const value_expression& lhs_m;
-    const value_expression& rhs_m;
-};
-
-class not_equal_expression : public boolean_expression
-{
-public:
-    not_equal_expression(const value_expression& lhs, const value_expression& rhs)
-        : lhs_m(lhs)
-        , rhs_m(rhs)
-    {
-    }
-
-    bool evaluate(const context_t&) const override;
-
-private:
-    const value_expression& lhs_m;
-    const value_expression& rhs_m;
-};
-
-class less_expression : public boolean_expression
-{
-public:
-    less_expression(const value_expression& lhs, const value_expression& rhs)
-        : lhs_m(lhs)
-        , rhs_m(rhs)
-    {
-    }
-
-    bool evaluate(const context_t&) const override;
-
-private:
-    const value_expression& lhs_m;
-    const value_expression& rhs_m;
-};
-
-class less_or_equal_expression : public boolean_expression
-{
-public:
-    less_or_equal_expression(const value_expression& lhs, const value_expression& rhs)
-        : lhs_m(lhs)
-        , rhs_m(rhs)
-    {
-    }
-
-    bool evaluate(const context_t&) const override;
-
-private:
-    const value_expression& lhs_m;
-    const value_expression& rhs_m;
-};
-
-class greater_expression : public boolean_expression
-{
-public:
-    greater_expression(const value_expression& lhs, const value_expression& rhs)
-        : lhs_m(lhs)
-        , rhs_m(rhs)
-    {
-    }
-
-    bool evaluate(const context_t&) const override;
-
-private:
-    const value_expression& lhs_m;
-    const value_expression& rhs_m;
-};
-
-class greater_or_equal_expression : public boolean_expression
-{
-public:
-    greater_or_equal_expression(const value_expression& lhs, const value_expression& rhs)
-        : lhs_m(lhs)
-        , rhs_m(rhs)
-    {
-    }
-
-    bool evaluate(const context_t&) const override;
-
-private:
-    const value_expression& lhs_m;
-    const value_expression& rhs_m;
 };
 
 }

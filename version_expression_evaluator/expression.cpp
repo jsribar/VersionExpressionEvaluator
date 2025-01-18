@@ -1,60 +1,45 @@
 #include "context.hpp"
 #include "expression.hpp"
 
+#include <cassert>
+
 namespace jsribar::version_expression {
 
-bool not_expression::evaluate(const context_t& context) const
+bool not_expression_t::evaluate(const context_t& context) const
 {
     return !expression_m.evaluate(context);
 }
 
-bool and_expression::evaluate(const context_t& context) const
+bool and_expression_t::evaluate(const context_t& context) const
 {
     return lhs_m.evaluate(context) && rhs_m.evaluate(context);
 }
 
-bool or_expression::evaluate(const context_t& context) const
+bool or_expression_t::evaluate(const context_t& context) const
 {
     return lhs_m.evaluate(context) || rhs_m.evaluate(context);
 }
 
-version_t version_variable_expression::evaluate(const context_t& context) const
+bool comparison_expression_t::evaluate(const context_t& context) const
 {
-    return context.version();
-}
-
-bool equal_expression::evaluate(const context_t&) const
-{
-    return false;
-}
-
-version_t version_constant_expression::evaluate(const context_t&) const
-{
-    return version_m;
-}
-
-bool not_equal_expression::evaluate(const context_t&) const
-{
-    return false;
-}
-
-bool less_expression::evaluate(const context_t&) const
-{
-    return false;
-}
-
-bool less_or_equal_expression::evaluate(const context_t&) const
-{
-    return false;
-}
-
-bool greater_expression::evaluate(const context_t&) const
-{
-    return false;
-}
-
-bool greater_or_equal_expression::evaluate(const context_t&) const
-{
+    switch (operator_m)
+    {
+    case operator_t::equal_to:
+        return context.version() == version_m;
+    case operator_t::not_equal:
+        return context.version() != version_m;
+    case operator_t::greater_than:
+        return context.version() > version_m;
+    case operator_t::greater_than_or_equal_to:
+        return context.version() >= version_m;
+    case operator_t::less_than:
+        return context.version() < version_m;
+    case operator_t::less_than_or_equal_to:
+        return context.version() <= version_m;
+    default:
+        assert(false);
+        break;
+    }
     return false;
 }
 

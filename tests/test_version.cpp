@@ -53,5 +53,72 @@ TEST_CASE("version_t constructor creates object from string", "[version_t]")
         CHECK(version.digits()[0] == 1);
         CHECK(version.digits()[1] == 12);
     }
+}
 
+TEST_CASE("version_t comparison operators", "[version_t]")
+{
+    SECTION("Equal to operator")
+    {
+        CHECK(version_t("1") == version_t("1"));
+        CHECK(version_t("1.2") == version_t("1.2"));
+
+        CHECK_FALSE(version_t("1.2") == version_t("1.2.3"));
+    }
+
+    SECTION("Not equal operator")
+    {
+        CHECK(version_t("1") != version_t("2"));
+        CHECK(version_t("1.2") != version_t("2.1"));
+        CHECK(version_t("1.2") != version_t("1.2.3"));
+
+        CHECK_FALSE(version_t("1") != version_t("1"));
+    }
+
+    SECTION("Less than operator")
+    {
+        CHECK(version_t("1") < version_t("2"));
+        CHECK(version_t("1.2") < version_t("1.3"));
+
+        CHECK(version_t("1.2") < version_t("1.2.0"));
+        CHECK(version_t("1.2") < version_t("1.2.1"));
+        
+        CHECK_FALSE(version_t("3") < version_t("3"));
+        CHECK_FALSE(version_t("1.3") < version_t("1.2"));
+        CHECK_FALSE(version_t("1.2") < version_t("1.2"));
+    }
+
+    SECTION("Less than or equal to operator")
+    {
+        CHECK(version_t("1") <= version_t("1"));
+        CHECK(version_t("1") <= version_t("2"));
+        CHECK(version_t("1.2") <= version_t("1.2"));
+        CHECK(version_t("1.2") <= version_t("1.3"));
+
+        CHECK_FALSE(version_t("1.3") <= version_t("1.2"));
+        CHECK_FALSE(version_t("1.2.0") < version_t("1.2"));
+        CHECK_FALSE(version_t("1.2.1") < version_t("1.2"));
+    }
+
+    SECTION("Greater than operator")
+    {
+        CHECK(version_t("2") > version_t("1"));
+        CHECK(version_t("1.3") > version_t("1.2"));
+        CHECK(version_t("1.3.0") > version_t("1.3"));
+
+        CHECK_FALSE(version_t("3") < version_t("3"));
+        CHECK_FALSE(version_t("1.2") < version_t("1.2"));
+        CHECK_FALSE(version_t("1.3") < version_t("1.2"));
+        CHECK_FALSE(version_t("1.3") < version_t("1.2"));
+    }
+
+    SECTION("Greater than or equal to operator")
+    {
+        CHECK(version_t("1") >= version_t("1"));
+        CHECK(version_t("2") >= version_t("1"));
+        CHECK(version_t("1.2") >= version_t("1.2"));
+        CHECK(version_t("1.3") >= version_t("1.2"));
+
+        CHECK_FALSE(version_t("1.2") >= version_t("1.3"));
+        CHECK_FALSE(version_t("1.2") >= version_t("1.2.0"));
+    }
 }

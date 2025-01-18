@@ -21,6 +21,12 @@
     <ClCompile Include="..\version_expression_evaluator\version.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="test_expressions.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\version_expression_evaluator\expression.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\version_expression_evaluator\version.hpp">

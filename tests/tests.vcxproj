@@ -135,7 +135,9 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="..\version_expression_evaluator\expression.cpp" />
     <ClCompile Include="..\version_expression_evaluator\version.cpp" />
+    <ClCompile Include="test_expressions.cpp" />
     <ClCompile Include="test_version.cpp" />
   </ItemGroup>
   <ItemGroup>
