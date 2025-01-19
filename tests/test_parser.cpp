@@ -202,7 +202,7 @@ TEST_CASE("parse method creates object for expression with AND and NOT operators
 TEST_CASE("parse method creates object for expression with multiple AND and NOT operators", "[parse]")
 {
     constexpr auto text{ "version:<=2.15.0 AND NOT version:=2.12.2 AND NOT version:=2.12.3" };
-    auto expression = parse(text);
+    const auto expression = parse(text);
 
     {
         version_t version{ "2.12.1" };
