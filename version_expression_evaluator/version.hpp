@@ -9,6 +9,8 @@ namespace jsribar::version_expression {
 class version_t
 {
 public:
+    version_t() = default;
+
     explicit version_t(std::string_view str);
 
     const std::vector<int>& digits() const {

@@ -1,76 +1,80 @@
 #pragma once
 
-#include "context.hpp"
 #include "operators.hpp"
 #include "version.hpp"
 
+#include <memory>
+
 namespace jsribar::version_expression {
 
-class boolean_expression_t
+class expression_t
 {
 public:
-    virtual ~boolean_expression_t() = default;
+    virtual ~expression_t() = default;
 
-    virtual bool evaluate(const context_t&) const = 0;
+    virtual bool evaluate(const version_t&) const = 0;
 
 };
 
-class not_expression_t : public boolean_expression_t
+using expression_ptr = std::unique_ptr<expression_t>;
+
+class not_expression_t : public expression_t
 {
 public:
-    explicit not_expression_t(const boolean_expression_t& boolean_expression_t)
-        : expression_m(boolean_expression_t)
+    explicit not_expression_t(expression_ptr expression)
+        : expression_m(std::move(expression))
     {
     }
 
-    bool evaluate(const context_t&) const override;
+    bool evaluate(const version_t&) const override;
 
 private:
-    const boolean_expression_t& expression_m;
+    const expression_ptr expression_m;
 };
 
-class and_expression_t : public boolean_expression_t
+
+class and_expression_t : public expression_t
 {
 public:
-    and_expression_t(const boolean_expression_t& lhs, const boolean_expression_t& rhs)
-        : lhs_m(lhs)
-        , rhs_m(rhs)
+    and_expression_t(expression_ptr lhs, expression_ptr rhs)
+        : lhs_m(std::move(lhs))
+        , rhs_m(std::move(rhs))
     {
     }
 
-    bool evaluate(const context_t&) const override;
+    bool evaluate(const version_t&) const override;
 
 private:
-    const boolean_expression_t& lhs_m;
-    const boolean_expression_t& rhs_m;
+    const expression_ptr lhs_m;
+    const expression_ptr rhs_m;
 };
 
-class or_expression_t : public boolean_expression_t
+class or_expression_t : public expression_t
 {
 public:
-    or_expression_t(const boolean_expression_t& lhs, const boolean_expression_t& rhs)
-        : lhs_m(lhs)
-        , rhs_m(rhs)
+    or_expression_t(expression_ptr lhs, expression_ptr rhs)
+        : lhs_m(std::move(lhs))
+        , rhs_m(std::move(rhs))
     {
     }
 
-    bool evaluate(const context_t&) const override;
+    bool evaluate(const version_t&) const override;
 
 private:
-    const boolean_expression_t& lhs_m;
-    const boolean_expression_t& rhs_m;
+    const expression_ptr lhs_m;
+    const expression_ptr rhs_m;
 };
 
-class comparison_expression_t : public boolean_expression_t
+class comparison_expression_t : public expression_t
 {
 public:
-    comparison_expression_t(operator_t comparison_operator, const version_t& version)
+    comparison_expression_t(operator_t comparison_operator, version_t version)
         : operator_m(comparison_operator)
-        , version_m(version)
+        , version_m(std::move(version))
     {
     }
 
-    bool evaluate(const context_t&) const override;
+    bool evaluate(const version_t&) const override;
 
 private:
     operator_t operator_m;

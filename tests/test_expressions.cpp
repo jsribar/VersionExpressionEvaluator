@@ -8,78 +8,114 @@ TEST_CASE("Simple expressions evaluate value", "[expression]")
 {
     SECTION("not_expression inverts the result")
     {
-        comparison_expression_t cmp{ operator_t::greater_than , version_t{"1.0"}};
-        not_expression_t not_exp{ cmp };
+        comparison_expression_t cmp{ operator_t::greater_than, version_t{ "1.0" } };
+        not_expression_t not_exp{ std::make_unique<comparison_expression_t>(cmp) };
 
         {
-            context_t context{ version_t{"1.0"} };
+            version_t version{ "1.0" };
 
-            REQUIRE(cmp.evaluate(context) == false);
+            REQUIRE(cmp.evaluate(version) == false);
 
-            CHECK(not_exp.evaluate(context) == true);
+            CHECK(not_exp.evaluate(version) == true);
         }
         {
-            context_t context{ version_t{"2.0"} };
+            version_t version{ "2.0" };
 
-            REQUIRE(cmp.evaluate(context) == true);
+            REQUIRE(cmp.evaluate(version) == true);
 
-            CHECK(not_exp.evaluate(context) == false);
+            CHECK(not_exp.evaluate(version) == false);
         }
     }
 
     SECTION("and_expression returns logical AND of 2 expressions")
     {
-        comparison_expression_t cmp1{ operator_t::greater_than_or_equal_to, version_t{"1.0"} };
-        comparison_expression_t cmp2{ operator_t::less_than, version_t{"2.0"} };
-        and_expression_t end_exp{ cmp1, cmp2 };
+        comparison_expression_t cmp1{ operator_t::greater_than_or_equal_to, version_t{ "1.0" } };
+        comparison_expression_t cmp2{ operator_t::less_than, version_t{ "2.0" } };
+        and_expression_t end_exp{ std::make_unique<comparison_expression_t>(cmp1), std::make_unique<comparison_expression_t>(cmp2) };
 
         {
-            context_t context{ version_t{"0.9"} };
-            CHECK(end_exp.evaluate(context) == false);
+            version_t version{ "0.9" };
+
+            REQUIRE(cmp1.evaluate(version) == false);
+            REQUIRE(cmp2.evaluate(version) == true);
+
+            CHECK(end_exp.evaluate(version) == false);
         }
         {
-            context_t context{ version_t{"1.0"} };
-            CHECK(end_exp.evaluate(context) == true);
+            version_t version{ "1.0" };
+
+            REQUIRE(cmp1.evaluate(version) == true);
+            REQUIRE(cmp2.evaluate(version) == true);
+
+            CHECK(end_exp.evaluate(version) == true);
         }
         {
-            context_t context{ version_t{"1.5"} };
-            CHECK(end_exp.evaluate(context) == true);
+            version_t version{ "1.5" };
+
+            REQUIRE(cmp1.evaluate(version) == true);
+            REQUIRE(cmp2.evaluate(version) == true);
+
+            CHECK(end_exp.evaluate(version) == true);
         }
         {
-            context_t context{ version_t{"2.0"} };
-            CHECK(end_exp.evaluate(context) == false);
+            version_t version{ "2.0" };
+
+            REQUIRE(cmp1.evaluate(version) == true);
+            REQUIRE(cmp2.evaluate(version) == false);
+
+            CHECK(end_exp.evaluate(version) == false);
         }
         {
-            context_t context{ version_t{"3.0"} };
-            CHECK(end_exp.evaluate(context) == false);
+            version_t version{ "3.0" };
+            CHECK(end_exp.evaluate(version) == false);
         }
     }
 
     SECTION("or_expression returns logical OR of 2 expressions")
     {
-        comparison_expression_t cmp1{ operator_t::less_than_or_equal_to, version_t{"1.0"} };
-        comparison_expression_t cmp2{ operator_t::greater_than, version_t{"2.0"} };
-        or_expression_t or_exp{ cmp1, cmp2 };
+        comparison_expression_t cmp1{ operator_t::less_than_or_equal_to, version_t{ "1.0" } };
+        comparison_expression_t cmp2{ operator_t::greater_than, version_t{ "2.0" } };
+        or_expression_t or_exp{ std::make_unique<comparison_expression_t>(cmp1), std::make_unique<comparison_expression_t>(cmp2) };
 
         {
-            context_t context{ version_t{"0.9"} };
-            CHECK(or_exp.evaluate(context) == true);
+            version_t version{ "0.9" };
+
+            REQUIRE(cmp1.evaluate(version) == true);
+            REQUIRE(cmp2.evaluate(version) == false);
+
+            CHECK(or_exp.evaluate(version) == true);
         }
         {
-            context_t context{ version_t{"1.0"} };
-            CHECK(or_exp.evaluate(context) == true);
+            version_t version{ "1.0" };
+
+            REQUIRE(cmp1.evaluate(version) == true);
+            REQUIRE(cmp2.evaluate(version) == false);
+
+            CHECK(or_exp.evaluate(version) == true);
         }
         {
-            context_t context{ version_t{"1.5"} };
-            CHECK(or_exp.evaluate(context) == false);
+            version_t version{ "1.5" };
+
+            REQUIRE(cmp1.evaluate(version) == false);
+            REQUIRE(cmp2.evaluate(version) == false);
+
+            CHECK(or_exp.evaluate(version) == false);
         }
         {
-            context_t context{ version_t{"2.0"} };
-            CHECK(or_exp.evaluate(context) == false);
+            version_t version{ "2.0" };
+
+            REQUIRE(cmp1.evaluate(version) == false);
+            REQUIRE(cmp2.evaluate(version) == false);
+
+            CHECK(or_exp.evaluate(version) == false);
         }
         {
-            context_t context{ version_t{"3.0"} };
-            CHECK(or_exp.evaluate(context) == true);
+            version_t version{ "3.0" };
+
+            REQUIRE(cmp1.evaluate(version) == false);
+            REQUIRE(cmp2.evaluate(version) == true);
+
+            CHECK(or_exp.evaluate(version) == true);
         }
     }
 }

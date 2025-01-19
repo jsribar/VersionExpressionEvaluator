@@ -13,19 +13,28 @@
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
+    <Filter Include="Source Files\evaluator">
+      <UniqueIdentifier>{2f1caed6-6be4-4282-a22c-ae054baeb710}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="test_version.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\version_expression_evaluator\version.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="test_expressions.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\version_expression_evaluator\expression.cpp">
+    <ClCompile Include="test_parser.cpp">
       <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\version_expression_evaluator\expression.cpp">
+      <Filter>Source Files\evaluator</Filter>
+    </ClCompile>
+    <ClCompile Include="..\version_expression_evaluator\expression_parser.cpp">
+      <Filter>Source Files\evaluator</Filter>
+    </ClCompile>
+    <ClCompile Include="..\version_expression_evaluator\version.cpp">
+      <Filter>Source Files\evaluator</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

@@ -132,12 +132,13 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="expression.cpp" />
+    <ClCompile Include="expression_parser.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="version.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="context.hpp" />
     <ClInclude Include="expression.hpp" />
+    <ClInclude Include="expression_parser.hpp" />
     <ClInclude Include="operators.hpp" />
     <ClInclude Include="version.hpp" />
   </ItemGroup>
