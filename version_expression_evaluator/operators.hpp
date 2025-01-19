@@ -55,6 +55,7 @@ struct operator_definition_t
 
 // Order of greater... and less... tokens respectively is important to resolve them correctly.
 inline constexpr auto comparison_operators_k = std::to_array<operator_definition_t>({
+    { "==", operator_t::equal_to },
     { "=", operator_t::equal_to },
     { "!=", operator_t::not_equal_to },
     { ">=", operator_t::greater_than_or_equal_to },

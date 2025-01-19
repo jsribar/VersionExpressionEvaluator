@@ -21,6 +21,21 @@ TEST_CASE("parse method creates expression object for simple comparison", "[pars
         }
     }
 
+    SECTION("Equal to comparison with ==")
+    {
+        constexpr auto text{ "version:==1.0" };
+        auto expression = parse(text);
+
+        {
+            version_t version{ "1.0" };
+            CHECK(expression->evaluate(version) == true);
+        }
+        {
+            version_t version{ "2.0" };
+            CHECK(expression->evaluate(version) == false);
+        }
+    }
+
     SECTION("Not equal to comparison")
     {
         constexpr auto text{ "version:!=1.0" };
