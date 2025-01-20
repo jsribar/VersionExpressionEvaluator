@@ -1,12 +1,9 @@
-#pragma once
-
-#include <array>
 // SPDX-License-Identifier: MIT
 
 /*
  * MIT License
  *
- * Copyright (c) 2025 by Julijan Šribar
+ * Copyright (c) 2025 by Julijan Å ribar
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -30,6 +27,9 @@
  *
  */
 
+#pragma once
+
+#include <array>
 #include <string_view>
 
 namespace jsribar::version_expression {

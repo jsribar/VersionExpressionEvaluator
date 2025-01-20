@@ -3,7 +3,7 @@
 /*
  * MIT License
  *
- * Copyright (c) 2025 by Julijan Šribar
+ * Copyright (c) 2025 by Julijan Å ribar
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
