@@ -6,7 +6,7 @@ A simple evaluator that verifies if a given version satisfies some logical expre
 
 Supported Boolean operators are `NOT`, `AND` and `OR`, listed by precedence, from highest to lowest. For version comparisons, operators `==`, `=` (both for equal to), `!=` (not equal to), `<`, `<=`, `>` and `>=` are supported.
 
-Argument passed to `parse` function should be a string with expression and function returns `std::unique_ptr<expression_t>`, a pointer to final expression object. Invoking `evaluate` method on this object, passing version to test, checks if the version satisfies expression. For example:
+Argument passed to `parse` function should be a string with expression and function returns `std::unique_ptr<expression_t>`, a pointer to final expression object. `evaluate` method on this object, with version to test passed, checks if the version satisfies expression. For example:
 
 ```c++
 auto expression = parse("version:<=2.15.0 AND NOT version:=2.12.2 AND NOT version:=2.12.3");
