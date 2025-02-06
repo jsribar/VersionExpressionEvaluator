@@ -307,3 +307,154 @@ TEST_CASE("parse method creates object for expression with multiple AND and NOT 
     }
 }
 
+TEST_CASE("parse method creates object for expression enclosed in parentheses", "[parse]")
+{
+    constexpr auto text{ "(version:<=2.15.0 AND NOT version:=2.12.2 AND NOT version:=2.12.3)" };
+    const auto expression = parse(text);
+
+    {
+        version_t version{ "2.12.1" };
+        CHECK(expression->evaluate(version) == true);
+    }
+    {
+        version_t version{ "2.12.2" };
+        CHECK(expression->evaluate(version) == false);
+    }
+    {
+        version_t version{ "2.12.3" };
+        CHECK(expression->evaluate(version) == false);
+    }
+    {
+        version_t version{ "2.15" };
+        CHECK(expression->evaluate(version) == true);
+    }
+    {
+        version_t version{ "2.15.0" };
+        CHECK(expression->evaluate(version) == true);
+    }
+    {
+        version_t version{ "2.15.1" };
+        CHECK(expression->evaluate(version) == false);
+    }
+}
+
+TEST_CASE("parse method creates object for expression with different precedence", "[parse]")
+{
+    constexpr auto text{ "version:<=2.15 AND version:>=2.12 OR version:=2.17" };
+    const auto expression = parse(text);
+
+    {
+        version_t version{ "2.11" };
+        CHECK(expression->evaluate(version) == false);
+    }
+    {
+        version_t version{ "2.12" };
+        CHECK(expression->evaluate(version) == true);
+    }
+    {
+        version_t version{ "2.13" };
+        CHECK(expression->evaluate(version) == true);
+    }
+    {
+        version_t version{ "2.14" };
+        CHECK(expression->evaluate(version) == true);
+    }
+    {
+        version_t version{ "2.15" };
+        CHECK(expression->evaluate(version) == true);
+    }
+    {
+        version_t version{ "2.16" };
+        CHECK(expression->evaluate(version) == false);
+    }
+    {
+        version_t version{ "2.17" };
+        CHECK(expression->evaluate(version) == true);
+    }
+    {
+        version_t version{ "2.18" };
+        CHECK(expression->evaluate(version) == false);
+    }
+}
+
+
+TEST_CASE("parse method creates object for expression with parentheses overriding operator precedence", "[parse]")
+{
+    constexpr auto text{ "version:>=2.12 AND (version:=2.14 OR version:=2.17)" };
+    const auto expression = parse(text);
+
+    {
+        version_t version{ "2.11" };
+        CHECK(expression->evaluate(version) == false);
+    }
+    {
+        version_t version{ "2.12" };
+        CHECK(expression->evaluate(version) == false);
+    }
+    {
+        version_t version{ "2.13" };
+        CHECK(expression->evaluate(version) == false);
+    }
+    {
+        version_t version{ "2.14" };
+        CHECK(expression->evaluate(version) == true);
+    }
+    {
+        version_t version{ "2.15" };
+        CHECK(expression->evaluate(version) == false);
+    }
+    {
+        version_t version{ "2.16" };
+        CHECK(expression->evaluate(version) == false);
+    }
+    {
+        version_t version{ "2.17" };
+        CHECK(expression->evaluate(version) == true);
+    }
+    {
+        version_t version{ "2.18" };
+        CHECK(expression->evaluate(version) == false);
+    }
+}
+
+
+TEST_CASE("parse method creates object for expression with duplicate parentheses overriding operator precedence", "[parse]")
+{
+    constexpr auto text{ "(version:>=2.12 AND ((version:=2.14 OR version:=2.17)))" };
+    const auto expression = parse(text);
+
+    {
+        version_t version{ "2.11" };
+        CHECK(expression->evaluate(version) == false);
+    }
+    {
+        version_t version{ "2.12" };
+        CHECK(expression->evaluate(version) == false);
+    }
+    {
+        version_t version{ "2.13" };
+        CHECK(expression->evaluate(version) == false);
+    }
+    {
+        version_t version{ "2.14" };
+        CHECK(expression->evaluate(version) == true);
+    }
+    {
+        version_t version{ "2.15" };
+        CHECK(expression->evaluate(version) == false);
+    }
+    {
+        version_t version{ "2.16" };
+        CHECK(expression->evaluate(version) == false);
+    }
+    {
+        version_t version{ "2.17" };
+        CHECK(expression->evaluate(version) == true);
+    }
+    {
+        version_t version{ "2.18" };
+        CHECK(expression->evaluate(version) == false);
+    }
+}
+
+

@@ -81,6 +81,7 @@ int number_of_operands(operator_t op)
     switch (op)
     {
     case operator_t::not_op:
+    case operator_t::left_parenthesis:
         return 1;
     case operator_t::and_op:
     case operator_t::or_op:
@@ -101,6 +102,8 @@ int get_precedence(operator_t op)
         return 2;
     case operator_t::not_op:
         return 3;
+    case operator_t::left_parenthesis:
+        return 4;
     default:
         assert(false);
         return 0;
@@ -131,7 +134,7 @@ operator_t consume_operator(std::string_view& text, const auto& operators)
 
 version_t consume_version(std::string_view& text)
 {
-    const auto end = std::ranges::find_if(text, [](char c) { return c == ' ' || c == '\t'; });
+    const auto end = std::ranges::find_if(text, [](char c) { return c == ' ' || c == '\t' || c == ')'; });
     const size_t length = std::distance(text.begin(), end);
     const auto value = text.substr(0, length);
     text.remove_prefix(length);
@@ -156,7 +159,7 @@ void evaluate_expression_from_top(std::stack<operator_t>& operators, std::stack<
         {
             top_expressions.push(pop_value(output));
         }
-    } while (!operators.empty() && get_precedence(operators.top()) == precedence);
+    } while (!operators.empty() && get_precedence(operators.top()) == precedence && operators.top() != operator_t::left_parenthesis);
 
     // Evaluates operations from the local stack and pushes the resulting expression to the output stack.
     auto lhs = pop_value(top_expressions);
@@ -174,6 +177,8 @@ void evaluate_expression_from_top(std::stack<operator_t>& operators, std::stack<
         case operator_t::or_op:
             lhs = std::make_unique<or_expression_t>(std::move(lhs), pop_value(top_expressions));
             break;
+        case operator_t::left_parenthesis:
+            break;
         default:
             assert(false);
             break;
@@ -185,11 +190,20 @@ void evaluate_expression_from_top(std::stack<operator_t>& operators, std::stack<
 void push_operator(operator_t op, std::stack<operator_t>& operators, std::stack<expression_ptr>& output)
 {
     // Evaluate operations of higher precedence first.
-    while (!operators.empty() && get_precedence(op) < get_precedence(operators.top()))
+    while (!operators.empty() && operators.top() != operator_t::left_parenthesis && get_precedence(op) < get_precedence(operators.top()))
     {
         evaluate_expression_from_top(operators, output);
     }
     operators.push(op);
+}
+
+void process_right_parenthesis(std::stack<operator_t>& operators, std::stack<expression_ptr>& output)
+{
+    while (operators.top() != operator_t::left_parenthesis)
+    {
+        evaluate_expression_from_top(operators, output);
+    }
+    operators.pop();
 }
 
 expression_ptr finalize_expression(std::stack<operator_t>& operators, std::stack<expression_ptr>& output)
@@ -212,6 +226,12 @@ expression_ptr parse(std::string_view text)
 
     while (!text.empty())
     {
+        if (text.starts_with("("))
+        {
+            operators.push(operator_t::left_parenthesis);
+            text.remove_prefix(1);
+            continue;
+        }
         if (version_processed)
         {
             push_operator(consume_operator(text, boolean_operators_k), operators, output);
@@ -222,11 +242,32 @@ expression_ptr parse(std::string_view text)
             push_operator(consume_operator(text, boolean_operators_k), operators, output);
             skip_mandatory_whitespaces(text);
         }
+        while (text.starts_with("("))
+        {
+            operators.push(operator_t::left_parenthesis);
+            text.remove_prefix(1);
+        }
         consume_version_token(text);
         const auto op = consume_operator(text, comparison_operators_k);
         output.push(std::make_unique<comparison_expression_t>(op, consume_version(text)));
-        skip_mandatory_whitespaces(text);
         version_processed = true;
+
+        if (text.starts_with(")"))
+        {
+            do
+            {
+                if (operators.empty())
+                {
+                    throw std::runtime_error("Invalid right parenthesis placement");
+                }
+                process_right_parenthesis(operators, output);
+                text.remove_prefix(1);
+            } while (text.starts_with(")"));
+        }
+        else
+        {
+            skip_mandatory_whitespaces(text);
+        }
     }
 
     return finalize_expression(operators, output);

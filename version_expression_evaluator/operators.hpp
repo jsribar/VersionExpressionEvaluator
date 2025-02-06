@@ -45,6 +45,8 @@ enum class operator_t
     greater_than,
     less_than_or_equal_to,
     less_than,
+    left_parenthesis,
+    right_parenthesis
 };
 
 struct operator_definition_t
